@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: GameTimer
   m_EditorClassIdentifier: 
   initialValue: 1200
-  runtimeValue: 0
+  runtimeValue: 87.02674
