@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: PlayerHP
   m_EditorClassIdentifier: 
   initialValue: 100
-  runtimeValue: -11
+  runtimeValue: 4

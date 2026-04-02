@@ -9,16 +9,20 @@ public class GameHUDManager : MonoBehaviour
     public FloatVariable gameTimer;
     public FloatVariable freezeLevel;
 
-    [Header("=== UI ===")]
-    public Image healthFill;
-    public Image freezeFill;
+    [Header("=== TIMER ===")]
     public TextMeshProUGUI timerText;
 
-    [Header("Ingredientes UI")]
-    public Image[] ingredientSlots;
+    [Header("=== CORAZONES (VIDA) ===")]
+    public Image[] hearts;
+    public Color normalColor = Color.white;
+    public Color emptyColor = Color.black;
+    public Color freezeColor = Color.cyan;
 
-    [Header("Win/Lose UI")]
-    
+    [Header("=== FREEZE ===")]
+    public float maxFreeze = 100f;
+
+    [Header("=== OBJETIVOS (MAPA / UI) ===")]
+    public GameObject[] objectiveImages; 
 
     [Header("=== ZONAS ===")]
     public GameObject zona1;
@@ -28,33 +32,26 @@ public class GameHUDManager : MonoBehaviour
 
     private int ingredientes = 0;
 
-    [Header("CONFIG")]
-    public int maxHP = 100;
-    public float maxFreeze = 100f;
-
     void Start()
     {
-        
         zona1.SetActive(true);
         zona2.SetActive(false);
         zona3.SetActive(false);
         zona4.SetActive(false);
 
-        
+        foreach (GameObject obj in objectiveImages)
+        {
+            obj.SetActive(false);
+        }
     }
 
     void Update()
     {
         gameTimer.Value += Time.deltaTime;
-        UpdateHealth();
-        UpdateTimer();
-        UpdateFreeze();
-    }
 
-    void UpdateHealth()
-    {
-        float value = (float)playerHP.Value / maxHP;
-        healthFill.fillAmount = value;
+        UpdateTimer();
+        UpdateHearts();
+        UpdateFreezeEffect();
     }
 
     void UpdateTimer()
@@ -67,22 +64,50 @@ public class GameHUDManager : MonoBehaviour
         timerText.text = minutes.ToString("00") + ":" + seconds.ToString("00");
     }
 
-    void UpdateFreeze()
+
+    void UpdateHearts()
     {
-        float value = freezeLevel.Value / maxFreeze;
-        freezeFill.fillAmount = value;
+        for (int i = 0; i < hearts.Length; i++)
+        {
+            if (i < playerHP.Value)
+            {
+                hearts[i].color = normalColor;
+            }
+            else
+            {
+                hearts[i].color = emptyColor;
+            }
+        }
+    }
+
+ 
+    void UpdateFreezeEffect()
+    {
+        float freezePercent = freezeLevel.Value / maxFreeze;
+
+        if (freezePercent > 0.5f)
+        {
+            // cambia color de corazones a azul
+            foreach (Image heart in hearts)
+            {
+                if (heart.color != emptyColor)
+                {
+                    heart.color = Color.Lerp(normalColor, freezeColor, freezePercent);
+                }
+            }
+        }
     }
 
     
     public void OnIngredientCollected()
     {
-        if (ingredientes < ingredientSlots.Length)
+        if (ingredientes < objectiveImages.Length)
         {
-            ingredientSlots[ingredientes].color = Color.white;
-            ingredientes++;
+            objectiveImages[ingredientes].SetActive(true);
         }
 
-        
+        ingredientes++;
+
         switch (ingredientes)
         {
             case 1:
@@ -95,7 +120,7 @@ public class GameHUDManager : MonoBehaviour
                 Debug.Log("Zona 3 desbloqueada");
                 break;
 
-            case 3:
+            case 4:
                 zona4.SetActive(true);
                 Debug.Log("Zona 4 desbloqueada");
                 break;
@@ -103,5 +128,22 @@ public class GameHUDManager : MonoBehaviour
     }
 
     
-    
+    public bool IsDead()
+    {
+        return playerHP.Value <= 0;
+    }
+
+ 
+    public void TakeDamage(int damage)
+    {
+        playerHP.Value -= damage;
+        playerHP.Value = Mathf.Clamp(playerHP.Value, 0, hearts.Length);
+    }
+
+   
+    public void Heal(int amount)
+    {
+        playerHP.Value += amount;
+        playerHP.Value = Mathf.Clamp(playerHP.Value, 0, hearts.Length);
+    }
 }
