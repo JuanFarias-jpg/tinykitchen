@@ -7,15 +7,16 @@ public class PlayerAnimator : MonoBehaviour
 
     [Header("Configuración")]
     [SerializeField] private float groundedBufferTime = 0.1f;
-    
+
     private PlayerMovement _movement;
     private PlayerInputHandler _input;
     private float _airTimer;
 
-    //IDs de los parametros del Animator -se cachean por rendimiento usar strings cada frame es más lento que usar IDs hasheados
     private static readonly int SpeedParam = Animator.StringToHash("Speed");
     private static readonly int IsGroundedParam = Animator.StringToHash("IsGrounded");
     private static readonly int VerticalVelocityParam = Animator.StringToHash("VerticalVelocity");
+    private static readonly int AttackParam = Animator.StringToHash("Attack");
+    private static readonly int DieParam = Animator.StringToHash("Die");
 
     private void Awake()
     {
@@ -33,19 +34,29 @@ public class PlayerAnimator : MonoBehaviour
         bool physicsGrounded = _movement.IsGrounded;
 
         if (physicsGrounded)
-        {
             _airTimer = 0f;
-        }
         else
-        {
             _airTimer += Time.deltaTime;
-        }
 
         bool animatorGrounded = _airTimer < groundedBufferTime;
 
         animator.SetFloat(SpeedParam, _input.MoveInput.magnitude);
         animator.SetBool(IsGroundedParam, animatorGrounded);
+
         float vertVel = animatorGrounded ? 0f : _movement.VerticalVelocity;
         animator.SetFloat(VerticalVelocityParam, vertVel);
+
+        
+        if (_input.AttackPressed)
+        {
+            animator.SetTrigger(AttackParam);
+            _input.ConsumeAttack();
+        }
+    }
+
+
+    public void PlayDeath()
+    {
+        animator.SetTrigger(DieParam);
     }
 }

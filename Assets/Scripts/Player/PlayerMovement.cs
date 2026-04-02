@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
@@ -13,6 +14,9 @@ public class PlayerMovement : MonoBehaviour
     [Range(0f, 1f)]
     [SerializeField] private float airControlFactor = 0.5f;
 
+    [Header("Sistema Particulas")]
+    public GameObject particulas;
+
     [Header("Coyote Time")]
     [SerializeField] private float coyoteTime = 0.15f;
     [Header("Rotación")]    [SerializeField] private float rotationSpeed = 10f;
@@ -25,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
     private float _coyoteTimer;
     //velocidad vertical actual (gravedad + salto)
     private float _verticalVelocity;
+    private Coroutine apagarParticulasCoroutine;
     public bool IsGrounded => _controller.isGrounded;
     public float VerticalVelocity => _verticalVelocity;
 
@@ -64,14 +69,37 @@ public class PlayerMovement : MonoBehaviour
         //aplicar factor de control aéreo si no está en el piso
         float speedMultiplier = _controller.isGrounded ? 1f : airControlFactor;
 
+        if (_controller.isGrounded && input.sqrMagnitude > 0.1f)
+        {
+            // Activar partículas al moverse
+            particulas.SetActive(true);
+
+            // Cancelar apagado si estaba en proceso
+            if (apagarParticulasCoroutine != null)
+            {
+                StopCoroutine(apagarParticulasCoroutine);
+                apagarParticulasCoroutine = null;
+            }
+        }
+        else
+        {
+            // Solo iniciar coroutine si no hay una ya corriendo
+            if (apagarParticulasCoroutine == null)
+            {
+                apagarParticulasCoroutine = StartCoroutine(ApagarParticulasConDelay());
+            }
+        }
 
         if (_controller.isGrounded && _verticalVelocity < 0f)
         {
-            _verticalVelocity = -2f;
+            
+
+                _verticalVelocity = -2f;
             _coyoteTimer = coyoteTime;
         }
         else
         {
+            
             _coyoteTimer -= Time.deltaTime;
         }
 
@@ -92,6 +120,15 @@ public class PlayerMovement : MonoBehaviour
                 rotationSpeed * Time.deltaTime
             );
         }
+    }
+
+    IEnumerator ApagarParticulasConDelay()
+    {
+        yield return new WaitForSeconds(0.3f);
+
+        particulas.SetActive(false);
+
+        apagarParticulasCoroutine = null;
     }
     private void HandleJump()
     {
