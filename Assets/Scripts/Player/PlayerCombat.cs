@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
@@ -9,7 +10,7 @@ public class PlayerCombat : MonoBehaviour
     [Header("Ataque")]
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private int damage = 1;
-    [SerializeField] private float attackCooldown = 0.5f;
+    [SerializeField] private float attackCooldown = 1f;
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private Transform attackPoint;
 
@@ -19,6 +20,10 @@ public class PlayerCombat : MonoBehaviour
 
     private void Awake()
     {
+        if (input == null)
+        {
+            UnityEngine.Debug.LogError("NO HAY PlayerInputHandler");
+        }
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
 
@@ -29,18 +34,24 @@ public class PlayerCombat : MonoBehaviour
     private void Update()
     {
         HandleAttack();
+        if (Input.GetMouseButtonDown(0))
+        {
+           
+            DoAttack();
+        }
     }
 
     void HandleAttack()
     {
-        if (!input.AttackPressed) return;
 
+        if (!input.AttackPressed) return;
+        
         if (Time.time < lastAttackTime + attackCooldown) return;
 
-      
+
         animator.SetTrigger(AttackParam);
 
-        
+
         DoAttack();
 
         lastAttackTime = Time.time;
@@ -50,15 +61,15 @@ public class PlayerCombat : MonoBehaviour
 
     void DoAttack()
     {
+
         Collider[] enemies = Physics.OverlapSphere(
-            attackPoint.position,
-            attackRange,
-            enemyLayer
-        );
+        attackPoint.position,
+        attackRange
+            );
 
         foreach (Collider enemy in enemies)
         {
-            
+
             EnemyHealth health = enemy.GetComponent<EnemyHealth>();
 
             if (health != null)

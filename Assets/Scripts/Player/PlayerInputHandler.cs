@@ -58,6 +58,10 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void OnAttack(InputAction.CallbackContext context)
     {
-        AttackPressed = true;
+        if (context.performed)
+        {
+            
+            AttackPressed = true;
+        }
     }
 }

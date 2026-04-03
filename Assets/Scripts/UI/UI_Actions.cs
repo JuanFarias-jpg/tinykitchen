@@ -4,41 +4,44 @@ using TMPro;
 
 public class GameHUDManager : MonoBehaviour
 {
-    [Header("=== VARIABLES (ScriptableObjects) ===")]
+    [Header(" VARIABLES (ScriptableObjects) ")]
     public IntVariable playerHP;
     public FloatVariable gameTimer;
     public FloatVariable freezeLevel;
 
-    [Header("=== TIMER ===")]
+    [Header(" TIMER ")]
     public TextMeshProUGUI timerText;
 
-    [Header("=== CORAZONES (VIDA) ===")]
+    [Header(" CORAZONES (VIDA) ")]
     public Image[] hearts;
     public Color normalColor = Color.white;
     public Color emptyColor = Color.black;
     public Color freezeColor = Color.cyan;
 
-    [Header("=== FREEZE ===")]
+    [Header(" FREEZE ")]
     public float maxFreeze = 100f;
 
-    [Header("=== OBJETIVOS (MAPA / UI) ===")]
+    [Header(" OBJETIVOS (MAPA / UI) ")]
     public GameObject[] objectiveImages; 
 
-    [Header("=== ZONAS ===")]
+    [Header(" ZONAS ")]
     public GameObject zona1;
     public GameObject zona2;
     public GameObject zona3;
     public GameObject zona4;
+    public GameObject zona5;
 
     private int ingredientes = 0;
 
     void Start()
     {
+        gameTimer.Value = 0;
+        playerHP.Value = 5;
         zona1.SetActive(true);
         zona2.SetActive(false);
         zona3.SetActive(false);
         zona4.SetActive(false);
-
+        zona5.SetActive(false);
         foreach (GameObject obj in objectiveImages)
         {
             obj.SetActive(false);
@@ -112,17 +115,17 @@ public class GameHUDManager : MonoBehaviour
         {
             case 1:
                 zona2.SetActive(true);
-                Debug.Log("Zona 2 desbloqueada");
                 break;
 
             case 2:
                 zona3.SetActive(true);
-                Debug.Log("Zona 3 desbloqueada");
                 break;
 
             case 4:
                 zona4.SetActive(true);
-                Debug.Log("Zona 4 desbloqueada");
+                break;
+            case 5:
+                zona5.SetActive(true);
                 break;
         }
     }
