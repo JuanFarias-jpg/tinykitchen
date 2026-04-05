@@ -1,11 +1,23 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 [RequireComponent(typeof(CharacterController))]
 public class EnemyPatrol : MonoBehaviour
 {
-    [Header("Patrullaje")]
-    public Transform[] waypoints;
+    [Header("Patrullaje Random")]
+    public float patrolRadius = 10f;
     public float patrolSpeed = 2f;
+    private Vector3 randomTarget;
+
+    [Header("Idle")]
+    public float timeBetweenIdle = 4f;
+    public float idleDuration = 2f;
+    private float idleTimer;
+
+    [Header("Audio")]
+    public AudioSource audioIdle;
+    public AudioSource audioRun;
+    public AudioSource audioAttack;
 
     [Header("Detección")]
     public float detectionRange = 5f;
@@ -21,17 +33,25 @@ public class EnemyPatrol : MonoBehaviour
     [Header("Eventos")]
     public GameEvent OnPlayerDamaged;
 
-    private int currentWaypoint = 0;
+    [Header("Ataque")]
+    public float attackCooldown = 1f;
+    private float lastAttackTime;
+    private bool canAttack = true;
+
+    [Header("Anti-Bug")]
+    public float stuckCheckTime = 1f;
+    public float minMoveDistance = 0.2f;
+    private Vector3 lastPosition;
+    private float stuckTimer;
+
+    public float wallCheckDistance = 1f;
+
     private Transform player;
     private Animator animator;
     private CharacterController controller;
 
-    private enum State { Patrol, Chase, Attack }
+    private enum State { Patrol, Idle, Chase, Attack }
     private State currentState;
-
-    private float attackCooldown = 1f;
-    private float lastAttackTime;
-    private bool canAttack = true;
 
     private void Start()
     {
@@ -40,18 +60,39 @@ public class EnemyPatrol : MonoBehaviour
         controller = GetComponent<CharacterController>();
 
         currentState = State.Patrol;
+        randomTarget = GetRandomPoint();
+        lastPosition = transform.position;
     }
 
     private void Update()
     {
         ApplyGravity();
+        CheckIfStuck();
 
         float distance = Vector3.Distance(transform.position, player.position);
+
+        idleTimer += Time.deltaTime;
+
+        HandleAudio();
 
         switch (currentState)
         {
             case State.Patrol:
                 Patrol();
+
+                if (distance < detectionRange)
+                    currentState = State.Chase;
+
+                if (idleTimer >= timeBetweenIdle)
+                {
+                    idleTimer = 0;
+                    currentState = State.Idle;
+                    Invoke(nameof(ExitIdle), idleDuration);
+                }
+                break;
+
+            case State.Idle:
+                animator.SetFloat("Speed", 0f);
 
                 if (distance < detectionRange)
                     currentState = State.Chase;
@@ -75,16 +116,40 @@ public class EnemyPatrol : MonoBehaviour
         }
     }
 
+    void HandleAudio()
+    {
+        // Idle
+        if (currentState == State.Idle)
+        {
+            if (audioIdle != null && !audioIdle.isPlaying)
+                audioIdle.Play();
+        }
+        else
+        {
+            if (audioIdle != null && audioIdle.isPlaying)
+                audioIdle.Stop();
+        }
+
+        // Run
+        if (currentState == State.Patrol || currentState == State.Chase)
+        {
+            if (audioRun != null && !audioRun.isPlaying)
+                audioRun.Play();
+        }
+        else
+        {
+            if (audioRun != null && audioRun.isPlaying)
+                audioRun.Stop();
+        }
+    }
+
     void Patrol()
     {
-        if (waypoints.Length == 0) return;
+        MoveTo(randomTarget, patrolSpeed);
 
-        Transform target = waypoints[currentWaypoint];
-        MoveTo(target.position, patrolSpeed);
-
-        if (Vector3.Distance(transform.position, target.position) < 0.2f)
+        if (Vector3.Distance(transform.position, randomTarget) < 0.5f)
         {
-            currentWaypoint = (currentWaypoint + 1) % waypoints.Length;
+            randomTarget = GetRandomPoint();
         }
 
         animator.SetFloat("Speed", patrolSpeed);
@@ -99,7 +164,7 @@ public class EnemyPatrol : MonoBehaviour
     void Attack()
     {
         Vector3 direction = (player.position - transform.position);
-        direction.y = 0; 
+        direction.y = 0;
 
         if (direction != Vector3.zero)
         {
@@ -115,13 +180,30 @@ public class EnemyPatrol : MonoBehaviour
 
             animator.SetTrigger("Attack");
 
-            if (OnPlayerDamaged != null)
-                OnPlayerDamaged.Raise();
-
             lastAttackTime = Time.time;
             Invoke(nameof(ResetAttack), attackCooldown);
         }
     }
+
+
+    public void DealDamage()
+    {
+        float distance = Vector3.Distance(transform.position, player.position);
+
+        if (distance <= attackRange)
+        {
+            if (OnPlayerDamaged != null)
+                OnPlayerDamaged.Raise();
+        }
+    }
+
+
+    public void PlayAttackSound()
+    {
+        if (audioAttack != null)
+            audioAttack.Play();
+    }
+
     void ResetAttack()
     {
         canAttack = true;
@@ -132,9 +214,16 @@ public class EnemyPatrol : MonoBehaviour
         Vector3 direction = (target - transform.position).normalized;
         direction.y = 0;
 
-        Vector3 move = direction * speed;
+        if (Physics.Raycast(transform.position + Vector3.up * 0.5f, direction, wallCheckDistance))
+        {
+            if (currentState == State.Patrol)
+            {
+                randomTarget = GetRandomPoint();
+                return;
+            }
+        }
 
-        
+        Vector3 move = direction * speed;
         move.y = verticalVelocity;
 
         controller.Move(move * Time.deltaTime);
@@ -155,6 +244,50 @@ public class EnemyPatrol : MonoBehaviour
         else
         {
             verticalVelocity += gravity * Time.deltaTime;
+        }
+    }
+
+    void CheckIfStuck()
+    {
+        stuckTimer += Time.deltaTime;
+
+        if (stuckTimer >= stuckCheckTime)
+        {
+            float distanceMoved = Vector3.Distance(transform.position, lastPosition);
+
+            if (distanceMoved < minMoveDistance && currentState == State.Patrol)
+            {
+                randomTarget = GetRandomPoint();
+            }
+
+            lastPosition = transform.position;
+            stuckTimer = 0f;
+        }
+    }
+
+    Vector3 GetRandomPoint()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            Vector3 randomDirection = Random.insideUnitSphere * patrolRadius;
+            randomDirection += transform.position;
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(randomDirection, out hit, patrolRadius, NavMesh.AllAreas))
+            {
+                return hit.position;
+            }
+        }
+
+        return transform.position;
+    }
+
+    void ExitIdle()
+    {
+        if (currentState == State.Idle)
+        {
+            randomTarget = GetRandomPoint();
+            currentState = State.Patrol;
         }
     }
 }

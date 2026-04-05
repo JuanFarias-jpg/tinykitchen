@@ -1,26 +1,39 @@
 using UnityEngine;
+using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Variables")]
     public IntVariable playerHP;
 
-    [Header("Eventos")]
-    public GameEvent OnPlayerDied;
+    [Header("Animación")]
+    [SerializeField] private Animator animator;
 
     [Header("Configuración")]
     public int damageAmount = 1;
     public float invincibilityTime = 1f;
 
+    [Header("Audios")]
+    public AudioSource Damage;
+    public AudioSource Dead;
+
     private bool isInvincible = false;
+
+    public static bool IsDead = false; 
+
+    private void Awake()
+    {
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
+    }
 
     public void TakeDamage()
     {
-        if (isInvincible) return;
+        if (isInvincible || IsDead) return;
 
         playerHP.Value -= damageAmount;
 
-        Debug.Log("Vida jugador: " + playerHP.Value);
+        Damage.Play();
 
         if (playerHP.Value <= 0)
         {
@@ -33,12 +46,30 @@ public class PlayerHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("Jugador murió");
+        IsDead = true;
+        Dead.Play();
+        PlayerAnimator pa = GetComponent<PlayerAnimator>();
+        if (pa != null) pa.enabled = false;
 
-        OnPlayerDied.Raise();
+        PlayerMovement movimiento = GetComponent<PlayerMovement>();
+        if (movimiento != null) movimiento.enabled = false;
+
+        PlayerCombat combat = GetComponent<PlayerCombat>();
+        if (combat != null) combat.enabled = false;
+
+        CharacterController controller = GetComponent<CharacterController>();
+        if (controller != null) controller.enabled = false;
+
+        if (animator != null)
+        {
+            animator.CrossFade("muerteChef", 0f);
+            animator.SetBool("IsDead", true); 
+        }
+
+        Destroy(gameObject, 3.5f);
     }
 
-    System.Collections.IEnumerator InvincibilityFrames()
+    IEnumerator InvincibilityFrames()
     {
         isInvincible = true;
         yield return new WaitForSeconds(invincibilityTime);

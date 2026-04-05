@@ -1,6 +1,6 @@
 using UnityEngine;
 
-
+[CreateAssetMenu(fileName = "SpawnerConfig", menuName = "Game/Spawner Config")]
 public class SpawnerConfig : ScriptableObject
 {
     public GameObject enemyPrefab;

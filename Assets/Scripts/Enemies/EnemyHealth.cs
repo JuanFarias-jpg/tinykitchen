@@ -3,8 +3,12 @@ using System;
 
 public class EnemyHealth : MonoBehaviour
 {
-    public int health = 3;
+    [Header("Audios")]
+    public AudioSource Damage;
+    public AudioSource Dead;
 
+    public int health = 3;
+    
     public event Action OnEnemyDied;
 
     private Animator animator;
@@ -20,7 +24,7 @@ public class EnemyHealth : MonoBehaviour
         if (isDead) return;
 
         health -= damage;
-
+        Damage.Play();
         if (health <= 0)
         {
             Die();
@@ -35,7 +39,7 @@ public class EnemyHealth : MonoBehaviour
            
             if (animator != null)
                 animator.SetTrigger("Die");
-
+            Dead.Play();
             
             EnemyPatrol patrol = GetComponent<EnemyPatrol>();
             if (patrol != null)

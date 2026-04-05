@@ -8,15 +8,21 @@ public class PlayerAnimator : MonoBehaviour
     [Header("Configuración")]
     [SerializeField] private float groundedBufferTime = 0.1f;
 
+    [Header("Efectos de Audio")]
+    public AudioSource audioGolpe;
+    public AudioSource audioSalto;
+    public AudioSource audioCorrer;
+
     private PlayerMovement _movement;
     private PlayerInputHandler _input;
     private float _airTimer;
 
+    private bool jumpSoundPlayed;
+    private bool wasGrounded;
+
     private static readonly int SpeedParam = Animator.StringToHash("Speed");
     private static readonly int IsGroundedParam = Animator.StringToHash("IsGrounded");
     private static readonly int VerticalVelocityParam = Animator.StringToHash("VerticalVelocity");
-    private static readonly int AttackParam = Animator.StringToHash("Attack");
-    private static readonly int DieParam = Animator.StringToHash("Die");
 
     private void Awake()
     {
@@ -29,6 +35,7 @@ public class PlayerAnimator : MonoBehaviour
 
     private void Update()
     {
+        if (PlayerHealth.IsDead) return;
         if (animator == null) return;
 
         bool physicsGrounded = _movement.IsGrounded;
@@ -46,17 +53,48 @@ public class PlayerAnimator : MonoBehaviour
         float vertVel = animatorGrounded ? 0f : _movement.VerticalVelocity;
         animator.SetFloat(VerticalVelocityParam, vertVel);
 
-        
-        if (_input.AttackPressed)
+        HandleJumpSound();
+        HandleRunSound(physicsGrounded);
+
+        wasGrounded = physicsGrounded;
+    }
+
+    
+    public void PlayAttackSound()
+    {
+        if (audioGolpe != null)
+            audioGolpe.Play();
+    }
+
+    void HandleJumpSound()
+    {
+        float verticalVel = _movement.VerticalVelocity;
+
+        if (verticalVel > 0.1f && !jumpSoundPlayed)
         {
-            animator.SetTrigger(AttackParam);
-            _input.ConsumeAttack();
+            if (audioSalto != null)
+                audioSalto.Play();
+
+            jumpSoundPlayed = true;
+        }
+
+        if (_movement.IsGrounded)
+        {
+            jumpSoundPlayed = false;
         }
     }
 
-
-    public void PlayDeath()
+    void HandleRunSound(bool grounded)
     {
-        animator.SetTrigger(DieParam);
+        if (grounded && _input.MoveInput.magnitude > 0.1f)
+        {
+            if (audioCorrer != null && !audioCorrer.isPlaying)
+                audioCorrer.Play();
+        }
+        else
+        {
+            if (audioCorrer != null && audioCorrer.isPlaying)
+                audioCorrer.Stop();
+        }
     }
 }

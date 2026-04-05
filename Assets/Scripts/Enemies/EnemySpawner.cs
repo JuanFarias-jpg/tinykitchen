@@ -4,7 +4,7 @@ using System.Collections;
 public class EnemySpawner : MonoBehaviour
 {
     [Header("Configuración")]
-    private SpawnerConfig config;
+    [SerializeField] private SpawnerConfig config;
 
     [Header("Puntos de spawn")]
     public Transform[] spawnPoints;
