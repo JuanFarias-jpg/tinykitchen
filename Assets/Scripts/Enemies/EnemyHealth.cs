@@ -6,8 +6,10 @@ public class EnemyHealth : MonoBehaviour
     [Header("Audios")]
     public AudioSource Damage;
     public AudioSource Dead;
-
+    public GameObject Sangre;
+    public GameObject Charquito;
     public int health = 3;
+    public GameObject sprite;
     
     public event Action OnEnemyDied;
 
@@ -30,8 +32,18 @@ public class EnemyHealth : MonoBehaviour
             Die();
         }
     }
-
-   
+    public void SangreActiva()
+    {
+        Sangre.SetActive(true);
+    }
+    public void SangreDesactivada()
+    {
+        Sangre.SetActive(false);
+    }
+   public void CharquitoActivado()
+    {
+        Charquito.SetActive(true);
+    }
         void Die()
         {
             isDead = true;
@@ -59,7 +71,8 @@ public class EnemyHealth : MonoBehaviour
             OnEnemyDied?.Invoke();
 
             
-            Destroy(gameObject, 2f);
+            Destroy(sprite,2f);
+        Destroy(gameObject, 3f);
         }
     
 }
