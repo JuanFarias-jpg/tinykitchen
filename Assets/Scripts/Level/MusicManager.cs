@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class MusicManager : MonoBehaviour
 {
@@ -7,9 +6,8 @@ public class MusicManager : MonoBehaviour
 
     private AudioSource audioSource;
 
-    void Awake()
+    private void Awake()
     {
-        // Si ya existe uno, destruye el nuevo (evita duplicados)
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
@@ -17,19 +15,13 @@ public class MusicManager : MonoBehaviour
         }
 
         instance = this;
-
-        DontDestroyOnLoad(gameObject); 
-
+        DontDestroyOnLoad(gameObject);
         audioSource = GetComponent<AudioSource>();
     }
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Return)) // Enter
-        {
-            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-            SceneManager.LoadScene(currentSceneIndex + 1);
-            audioSource.volume = 0.01f;
 
-        }
+    public void SetVolume(float volume)
+    {
+        if (audioSource != null)
+            audioSource.volume = Mathf.Clamp01(volume);
     }
 }

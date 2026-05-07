@@ -13,10 +13,10 @@ public class Estufa : MonoBehaviour
     [Header("Referencias")]
     [SerializeField] private GameObject fireVFX;
 
-    [Header("Evento de Daño")]
+    [Header("Evento de Daï¿½o")]
     public GameEvent OnPlayerDamage;
 
-    [Header("Daño")]
+    [Header("Daï¿½o")]
     public float damageCooldown = 0.6f;
 
     private float damageTimer = 0f;
@@ -36,6 +36,7 @@ public class Estufa : MonoBehaviour
 
         if (damageTimer >= damageCooldown)
         {
+            damageTimer = 0f;
             DealDamage();
         }
     }
@@ -89,6 +90,5 @@ public class Estufa : MonoBehaviour
         if (OnPlayerDamage != null)
             OnPlayerDamage.Raise();
 
-        damageTimer = 0f;
     }
 }

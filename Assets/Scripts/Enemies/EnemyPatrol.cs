@@ -19,11 +19,11 @@ public class EnemyPatrol : MonoBehaviour
     public AudioSource audioRun;
     public AudioSource audioAttack;
 
-    [Header("Detección")]
+    [Header("Deteccion")]
     public float detectionRange = 5f;
     public float attackRange = 1.5f;
 
-    [Header("Persecución")]
+    [Header("Persecucion")]
     public float chaseSpeed = 4f;
 
     [Header("Gravedad")]

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [Header("Configuración")]
+    [Header("Configuracion")]
     [SerializeField] private SpawnerConfig config;
 
     [Header("Puntos de spawn")]

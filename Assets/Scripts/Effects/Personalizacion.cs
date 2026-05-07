@@ -96,12 +96,5 @@ public class Personalizacion : MonoBehaviour
         //StartCoroutine(Segundo());
         SceneManager.LoadScene("Kitchen");
     }
-    //IEnumerator Segundo()
-    //{
-    //    Debug.Log("Entró a corrutina");
 
-    //    yield return new WaitForSeconds(0.2f);
-    //    Debug.Log("Intentando cambiar escena");
-    //    SceneManager.LoadScene("Kitchen");
-    //}
 }
