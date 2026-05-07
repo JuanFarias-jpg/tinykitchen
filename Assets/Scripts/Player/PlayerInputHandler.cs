@@ -10,6 +10,7 @@ public class PlayerInputHandler : MonoBehaviour
     public Vector2 MoveInput { get; private set; }
     public bool JumpPressed { get; private set; }
     public bool AttackPressed { get; private set; }
+    public bool DivePressed { get; private set; }
 
     private void Awake()
     {
@@ -23,6 +24,7 @@ public class PlayerInputHandler : MonoBehaviour
         //suscribirse a los eventos de cada acción
         _controls.Gameplay.Jump.performed += OnJump;
         _controls.Gameplay.Attack.performed += OnAttack;
+        _controls.Gameplay.Dive.performed += OnDive;
     }
 
     private void OnDisable()
@@ -30,6 +32,7 @@ public class PlayerInputHandler : MonoBehaviour
         //desuscribirse a los eventos
         _controls.Gameplay.Jump.performed -= OnJump;
         _controls.Gameplay.Attack.performed -= OnAttack;
+        _controls.Gameplay.Dive.performed += OnDive;
 
         _controls.Gameplay.Disable();
     }
@@ -40,24 +43,14 @@ public class PlayerInputHandler : MonoBehaviour
         MoveInput = _controls.Gameplay.Move.ReadValue<Vector2>();
 
     }
-    public void ConsumeJump()
-    {
-        JumpPressed = false;
-    }
+    public void ConsumeJump()   => JumpPressed   = false;
+    public void ConsumeAttack() => AttackPressed = false;
 
-    public void ConsumeAttack()
-    {
-        AttackPressed = false;
-    }
+    // ConsumeDive: llamado por PlayerMovement en HandleDive() justo después de
+    // leer el flag, para que no se dispare el dive dos veces en el mismo salto.
+    public void ConsumeDive()   => DivePressed   = false;
 
-    //callbacks del Input System
-    private void OnJump(InputAction.CallbackContext context)
-    {
-        JumpPressed = true;
-    }
-
-    private void OnAttack(InputAction.CallbackContext context)
-    {
-        AttackPressed = true;
-    }
+    private void OnJump(InputAction.CallbackContext _)   => JumpPressed   = true;
+    private void OnAttack(InputAction.CallbackContext _) => AttackPressed = true;
+    private void OnDive(InputAction.CallbackContext _)   => DivePressed   = true;
 }
