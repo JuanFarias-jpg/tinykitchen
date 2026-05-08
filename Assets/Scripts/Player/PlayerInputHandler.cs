@@ -11,7 +11,10 @@ public class PlayerInputHandler : MonoBehaviour
     public bool JumpPressed { get; private set; }
     public bool AttackPressed { get; private set; }
     public bool DivePressed { get; private set; }
+    [Header("Dive Cooldown")]
+    public float diveCooldown = 4f;
 
+    private float nextDiveTime;
     private void Awake()
     {
         _controls = new PlayerControls();
@@ -52,5 +55,16 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void OnJump(InputAction.CallbackContext _)   => JumpPressed   = true;
     private void OnAttack(InputAction.CallbackContext _) => AttackPressed = true;
-    private void OnDive(InputAction.CallbackContext _)   => DivePressed   = true;
+    
+    private void OnDive(InputAction.CallbackContext _)
+    {
+        //si todavía está en cooldown no hace nada
+        if (Time.time < nextDiveTime)
+            return;
+
+        DivePressed = true;
+
+        //guardar cuándo podrá volver a usarse
+        nextDiveTime = Time.time + diveCooldown;
+    }
 }

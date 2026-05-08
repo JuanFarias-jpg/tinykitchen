@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class GameManager : MonoBehaviour
     public IntVariable playerHP;
     public FloatVariable gameTimer;
     public IntVariable bossHP;
+    public IntVariable bossHP;
     public FloatVariable freezeLevel;
 
     [Header("Eventos SO — asignar en Inspector")]
@@ -20,6 +22,9 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     public WinLoseScreen winLoseScreen;
 
+    // bandera para evitar reset al volver de Personalizacion
+    public static bool volverDePersonalizacion = false;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -27,6 +32,7 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
 
         // Si viene de Personalizacion, restaurar el estado guardado
@@ -79,6 +85,7 @@ public class GameManager : MonoBehaviour
     {
         if (Estado != GameState.Playing) return;
 
+
         Estado = GameState.Won;
         Time.timeScale = 0f;
 
@@ -88,6 +95,7 @@ public class GameManager : MonoBehaviour
     public void LoseGame()
     {
         if (Estado != GameState.Playing) return;
+
 
         Estado = GameState.Lost;
         Time.timeScale = 0f;
