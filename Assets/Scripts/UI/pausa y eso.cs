@@ -13,6 +13,11 @@ public class pausayeso : MonoBehaviour
 
     [SerializeField] private float resumeAttackDelay = 0.15f;
 
+    // Variables SO para guardar el estado antes de ir a Personalizacion.
+    [Header("Variables SO — para guardar estado")]
+    [SerializeField] private FloatVariable gameTimer;
+    [SerializeField] private IntVariable playerHP;
+
     private PlayerControls controls;
     private bool juegoPausado = false;
 
@@ -88,6 +93,18 @@ public class pausayeso : MonoBehaviour
 
     public void Options()
     {
+        // Guardar el estado actual en PlayerPrefs antes de cargar Personalizacion.
+        // GameManager.cs lo lee al volver y restaura los valores en los SOs.
+        if (gameTimer != null)
+            PlayerPrefs.SetFloat("SavedTimer", gameTimer.Value);
+        if (playerHP != null)
+            PlayerPrefs.SetInt("SavedHP", playerHP.Value);
+
+        // Guardar flag para que GameManager sepa que viene de una pausa
+        // y no resetee los valores con ResetAllVariables().
+        PlayerPrefs.SetInt("ComingFromPersonalizacion", 1);
+        PlayerPrefs.Save();
+
         Time.timeScale = 1f;
         juegoPausado = false;
         SceneManager.LoadScene("Personalizacion");
