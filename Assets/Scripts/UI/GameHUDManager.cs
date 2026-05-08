@@ -114,12 +114,9 @@ public class GameHUDManager : MonoBehaviour
                 if (zona3 != null) zona3.SetActive(true);
                 break;
             case 3:
-                //falta case 3 si el ingrdiente 3 abre una zona 
-                break;
-            case 4:
                 if (zona4 != null) zona4.SetActive(true);
                 break;
-            case 5:
+            case 4:
                 if (zona5 != null) zona5.SetActive(true);
                 break;
         }

@@ -8,23 +8,16 @@ public class GameManager : MonoBehaviour
     public GameState Estado { get; private set; } = GameState.Playing;
 
     [Header("Variables SO — asignar en Inspector")]
-    [Tooltip("HP del jugador. Se resetea a initialValue al empezar.")]
-    public IntVariable   playerHP;
-    [Tooltip("Timer del juego. initialValue debe ser 1200 (20 min).")]
+    public IntVariable playerHP;
     public FloatVariable gameTimer;
-    [Tooltip("HP del boss. Se resetea a initialValue al empezar.")]
-    public IntVariable   bossHP;
-    [Tooltip("Nivel de congelamiento del jugador. Se resetea a 0.")]
+    public IntVariable bossHP;
     public FloatVariable freezeLevel;
 
     [Header("Eventos SO — asignar en Inspector")]
-    [Tooltip("Escucha este evento para transición a victoria.")]
     public GameEvent OnBossDefeated;
-    [Tooltip("Escucha este evento para transición a derrota.")]
     public GameEvent OnTimeExpired;
 
     [Header("UI")]
-    [Tooltip("Pantalla de victoria/derrota. Asignar en el Inspector.")]
     public WinLoseScreen winLoseScreen;
 
     private void Awake()
@@ -36,40 +29,72 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
 
-        ResetAllVariables();
+        // Si viene de Personalizacion, restaurar el estado guardado
+        // en lugar de resetear todo desde initialValue.
+        if (PlayerPrefs.GetInt("ComingFromPersonalizacion", 0) == 1)
+        {
+            RestaurarEstadoGuardado();
+            PlayerPrefs.DeleteKey("ComingFromPersonalizacion");
+        }
+        else
+        {
+            ResetAllVariables();
+        }
 
-        // Evita que IsDead quede true entre sesiones de Play en el editor
         PlayerHealth.IsDead = false;
     }
 
     private void ResetAllVariables()
     {
-        // Cada SO tiene ResetToInitial() que copia initialValue → runtimeValue.
         if (playerHP    != null) playerHP.ResetToInitial();
         if (gameTimer   != null) gameTimer.ResetToInitial();
         if (bossHP      != null) bossHP.ResetToInitial();
         if (freezeLevel != null) freezeLevel.ResetToInitial();
     }
 
-    // Llamado por el GameEventListener de OnBossDefeated.
+    // Restaura el timer y HP que se guardaron antes de ir a Personalizacion.
+    // Los demás valores (bossHP, freezeLevel) se resetean normal porque
+    // no cambian durante la sesión de forma que valga la pena guardar.
+    private void RestaurarEstadoGuardado()
+    {
+        if (gameTimer != null)
+        {
+            gameTimer.ResetToInitial();
+            gameTimer.Value = PlayerPrefs.GetFloat("SavedTimer", gameTimer.Value);
+            PlayerPrefs.DeleteKey("SavedTimer");
+        }
+
+        if (playerHP != null)
+        {
+            playerHP.ResetToInitial();
+            playerHP.Value = PlayerPrefs.GetInt("SavedHP", playerHP.Value);
+            PlayerPrefs.DeleteKey("SavedHP");
+        }
+
+        if (bossHP      != null) bossHP.ResetToInitial();
+        if (freezeLevel != null) freezeLevel.ResetToInitial();
+    }
+
     public void WinGame()
     {
         if (Estado != GameState.Playing) return;
+
         Estado = GameState.Won;
         Time.timeScale = 0f;
+
         if (winLoseScreen != null) winLoseScreen.ShowWin();
     }
 
-    // Llamado por el GameEventListener de OnTimeExpired, o por PlayerHealth.Die().
     public void LoseGame()
     {
         if (Estado != GameState.Playing) return;
+
         Estado = GameState.Lost;
         Time.timeScale = 0f;
+
         if (winLoseScreen != null) winLoseScreen.ShowLose();
     }
 
-    // Llamado por pausayeso.cs cuando el jugador presiona Escape.
     public void TogglePause()
     {
         if (Estado == GameState.Playing)
@@ -87,7 +112,6 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        PlayerAnimator.ResetLevantarse();
         UnityEngine.SceneManagement.SceneManager.LoadScene(
             UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }
