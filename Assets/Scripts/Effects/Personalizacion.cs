@@ -250,7 +250,7 @@ public class Personalizacion : MonoBehaviour
         if (cheeseText != null)
         {
             cheeseText.text =
-                "White Cheese: " +
+                "Yellow Cheese: " +
                 WhiteCheese.Value;
         }
     }
