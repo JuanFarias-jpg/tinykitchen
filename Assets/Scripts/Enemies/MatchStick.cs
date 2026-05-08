@@ -20,7 +20,8 @@ public class MatchStick : MonoBehaviour
     [Header("Visual del cerillo")]
     [Tooltip("Desactiva el renderer del cerillo al ser recogido (antes de destruirse).")]
     public Renderer matchRenderer;
-
+    public GameObject cerillo;
+    public GameObject cuchillo;
     private bool recogido = false;
 
     private void OnTriggerEnter(Collider other)
@@ -32,7 +33,8 @@ public class MatchStick : MonoBehaviour
 
         if (pickupSound != null) pickupSound.Play();
 
-
+        cerillo.SetActive(true);
+        cuchillo.SetActive(false);
         StartCoroutine(ActivarFuego(other.gameObject));
     }
 

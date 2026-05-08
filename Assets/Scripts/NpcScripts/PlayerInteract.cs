@@ -1,4 +1,3 @@
-// PlayerInteract.cs
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -8,7 +7,7 @@ public class PlayerInteract : MonoBehaviour
     [Header("Range")]
     [SerializeField] private float interactRange = 2f;
     [SerializeField] private float interactCooldown = 0.55f;
-    
+
     [Header("UI")]
     [SerializeField] private GameObject pressEImage;
     [SerializeField] private GameObject pressPImage;
@@ -18,31 +17,55 @@ public class PlayerInteract : MonoBehaviour
 
     private void Start()
     {
-        pressEImage.SetActive(false);
-        pressPImage.SetActive(false);
+        if (pressEImage != null)
+            pressEImage.SetActive(false);
+
+        if (pressPImage != null)
+            pressPImage.SetActive(false);
     }
 
     private void Update()
     {
         DetectNPC();
 
-        if (Time.time < nextInteractTime)
-            return;
+        bool eOnCooldown = Time.time < nextInteractTime;
 
-        // Interactuar con E
-        if (Input.GetKeyDown(KeyCode.E) &&
+        
+        if (pressEImage != null)
+        {
+            bool canShowE =
+                currentNpc != null &&
+                !DialogueUI.Instance.IsOpen() &&
+                !eOnCooldown;
+
+            pressEImage.SetActive(canShowE);
+        }
+
+        if (pressPImage != null)
+        {
+            bool canShowP =
+                currentNpc != null &&
+                !DialogueUI.Instance.IsOpen();
+
+            pressPImage.SetActive(canShowP);
+        }
+
+      
+
+        if (!eOnCooldown &&
+            Input.GetKeyDown(KeyCode.E) &&
             currentNpc != null &&
             !DialogueUI.Instance.IsOpen())
         {
-            pressEImage.SetActive(false);
-            pressPImage.SetActive(false);
-           
+            if (pressEImage != null)
+                pressEImage.SetActive(false);
+
             currentNpc.Interact(transform);
 
             nextInteractTime = Time.time + interactCooldown;
         }
 
-        // Ir a tienda con P
+       
         if (Input.GetKeyDown(KeyCode.P) &&
             currentNpc != null &&
             !DialogueUI.Instance.IsOpen())
@@ -66,11 +89,5 @@ public class PlayerInteract : MonoBehaviour
                 break;
             }
         }
-
-        bool inRange = currentNpc != null &&
-                       !DialogueUI.Instance.IsOpen();
-
-        pressEImage.SetActive(inRange);
-        pressPImage.SetActive(inRange);
     }
 }

@@ -6,16 +6,17 @@ using TMPro;
 
 public class Personalizacion : MonoBehaviour
 {
-    [Header("Personajes (Materiales)")]
-    public List<Material> listaPersonajes = new List<Material>();
+    [Header("Materiales")]
+    public List<Material> listaPersonajes =
+        new List<Material>();
 
-    [Header("Render del personaje")]
+    [Header("Renderer")]
     public Renderer personajeRenderer;
 
     [Header("Audio")]
-    [SerializeField] private AudioSource audio;
+    [SerializeField] private AudioSource audioSource;
 
-    [Header("Economia")]
+    [Header("Economía")]
     public IntVariable WhiteCheese;
     public int costoSkin = 5;
 
@@ -23,122 +24,282 @@ public class Personalizacion : MonoBehaviour
     public TextMeshProUGUI cheeseText;
 
     private int indexActual = 0;
-    private string key = "MaterialSeleccionado";
 
-    private bool lockedInput;
+    private string key =
+        "MaterialSeleccionado";
 
-    void Start()
+    private bool lockedInput = false;
+
+    // =========================
+    // AWAKE
+    // =========================
+
+    private void Awake()
     {
-        indexActual = PlayerPrefs.GetInt(key, 0);
+        if (personajeRenderer == null)
+        {
+            personajeRenderer =
+                GetComponentInChildren<Renderer>();
+        }
+
+        if (personajeRenderer == null)
+        {
+            Debug.LogError(
+                "NO HAY RENDERER");
+
+            enabled = false;
+            return;
+        }
+    }
+
+    // =========================
+    // START
+    // =========================
+
+    private void Start()
+    {
+        indexActual =
+            PlayerPrefs.GetInt(key, 0);
 
         if (listaPersonajes.Count > 0)
-            indexActual %= listaPersonajes.Count;
-        else
-            indexActual = 0;
+        {
+            indexActual =
+                Mathf.Clamp(
+                    indexActual,
+                    0,
+                    listaPersonajes.Count - 1);
+        }
 
         AplicarMaterial();
+
         ActualizarUI();
+
+        Debug.Log(
+            "SKIN ACTUAL: " +
+            indexActual);
     }
 
-    void Update()
+    // =========================
+    // UPDATE
+    // =========================
+
+    private void Update()
     {
-        if (lockedInput) return;
+        if (lockedInput)
+            return;
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
             Siguiente();
+        }
 
         if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
             Anterior();
+        }
 
         if (Input.GetKeyDown(KeyCode.Return))
+        {
             ComprarYContinuar();
+        }
     }
+
+    // =========================
+    // SIGUIENTE
+    // =========================
 
     public void Siguiente()
     {
-        if (audio != null) audio.Play();
+        if (listaPersonajes.Count == 0)
+            return;
 
-        if (listaPersonajes.Count == 0) return;
+        if (audioSource != null)
+            audioSource.Play();
 
-        indexActual = (indexActual + 1) % listaPersonajes.Count;
+        indexActual++;
+
+        if (indexActual >= listaPersonajes.Count)
+        {
+            indexActual = 0;
+        }
+
         AplicarMaterial();
+
+        Debug.Log(
+            "SKIN SELECCIONADA: " +
+            indexActual);
     }
+
+    // =========================
+    // ANTERIOR
+    // =========================
 
     public void Anterior()
     {
-        if (audio != null) audio.Play();
+        if (listaPersonajes.Count == 0)
+            return;
 
-        if (listaPersonajes.Count == 0) return;
+        if (audioSource != null)
+            audioSource.Play();
 
-        indexActual = (indexActual - 1 + listaPersonajes.Count) % listaPersonajes.Count;
+        indexActual--;
+
+        if (indexActual < 0)
+        {
+            indexActual =
+                listaPersonajes.Count - 1;
+        }
+
         AplicarMaterial();
+
+        Debug.Log(
+            "SKIN SELECCIONADA: " +
+            indexActual);
     }
 
-    void AplicarMaterial()
+    // =========================
+    // APLICAR MATERIAL
+    // =========================
+
+    private void AplicarMaterial()
     {
-        if (personajeRenderer != null && listaPersonajes.Count > 0)
-            personajeRenderer.material = listaPersonajes[indexActual];
+        if (personajeRenderer == null)
+            return;
+
+        if (listaPersonajes.Count == 0)
+            return;
+
+        personajeRenderer.material =
+            listaPersonajes[indexActual];
     }
+
+    // =========================
+    // COMPRAR
+    // =========================
 
     public void ComprarYContinuar()
     {
-        // Primera skin gratis
+        if (lockedInput)
+            return;
+
+        lockedInput = true;
+
+        // =========================
+        // SKIN GRATIS
+        // =========================
+
         if (indexActual == 0)
         {
             GuardarSkin();
-            StartCoroutine(ComprarExito());
+
+            StartCoroutine(
+                CompraExitosa());
+
             return;
         }
 
-        // No alcanza queso
+        // =========================
+        // NO ALCANZA
+        // =========================
+
         if (WhiteCheese.Value < costoSkin)
         {
-            StartCoroutine(FlashColor(Color.red));
+            StartCoroutine(
+                FlashColor(Color.red));
+
             return;
         }
 
-        // Compra válida
+        // =========================
+        // COMPRA
+        // =========================
+
         WhiteCheese.Value -= costoSkin;
 
         ActualizarUI();
 
         GuardarSkin();
 
-        StartCoroutine(ComprarExito());
+        StartCoroutine(
+            CompraExitosa());
     }
 
-    void GuardarSkin()
+    // =========================
+    // GUARDAR SKIN
+    // =========================
+
+    private void GuardarSkin()
     {
-        PlayerPrefs.SetInt(key, indexActual);
+        PlayerPrefs.SetInt(
+            key,
+            indexActual);
+
         PlayerPrefs.Save();
+
+        Debug.Log(
+            "GUARDANDO SKIN: " +
+            indexActual);
     }
 
-    void ActualizarUI()
+    // =========================
+    // UI
+    // =========================
+
+    private void ActualizarUI()
     {
         if (cheeseText != null)
-            cheeseText.text = "White Cheese: " + WhiteCheese.Value;
+        {
+            cheeseText.text =
+                "White Cheese: " +
+                WhiteCheese.Value;
+        }
     }
 
-    IEnumerator ComprarExito()
+    // =========================
+    // COMPRA EXITOSA
+    // =========================
+
+    IEnumerator CompraExitosa()
     {
-        lockedInput = true;
+        yield return StartCoroutine(
+            FlashColor(Color.green));
 
-        yield return StartCoroutine(FlashColor(Color.green));
+        yield return new WaitForSeconds(
+            0.2f);
 
-        GameManager.volverDePersonalizacion = true;
-        SceneManager.LoadScene("Kitchen");
+        // IMPORTANTE
+        PlayerPrefs.SetInt(
+            "ComingFromPersonalizacion",
+            1);
+
+        PlayerPrefs.Save();
+
+        SceneManager.LoadScene(
+            "Kitchen 1");
     }
+
+    // =========================
+    // FLASH
+    // =========================
 
     IEnumerator FlashColor(Color color)
     {
-        lockedInput = true;
+        if (personajeRenderer == null)
+        {
+            lockedInput = false;
+            yield break;
+        }
 
-        Material mat = personajeRenderer.material;
-        Color original = mat.color;
+        Material mat =
+            personajeRenderer.material;
+
+        Color original =
+            mat.color;
 
         mat.color = color;
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(
+            0.5f);
 
         mat.color = original;
 

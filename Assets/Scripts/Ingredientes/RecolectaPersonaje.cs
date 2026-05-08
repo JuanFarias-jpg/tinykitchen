@@ -26,8 +26,10 @@ public class RecolectaPersonaje : MonoBehaviour
 
     public void OnIngredientCollected(int index)
     {
-        if (index < 0 || index >= objetosVisuales.Count) return;
+        
+        index = objetosVisuales.Count - 1 - index;
 
+        if (index < 0 || index >= objetosVisuales.Count) return;
 
         if (playerMovement != null)
             playerMovement.puedeMoverse = false;
@@ -38,11 +40,13 @@ public class RecolectaPersonaje : MonoBehaviour
 
         // Escala personalizada
         Vector3 escala = Vector3.one;
+
         if (index < escalasFinales.Count)
             escala = escalasFinales[index];
 
         // Rotación personalizada
         Vector3 rotacion = Vector3.zero;
+
         if (index < rotacionesFinales.Count)
             rotacion = rotacionesFinales[index];
 

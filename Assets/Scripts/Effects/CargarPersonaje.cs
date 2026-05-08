@@ -3,24 +3,57 @@ using UnityEngine;
 
 public class CargarPersonaje : MonoBehaviour
 {
-    public List<Material> listaPersonajes = new List<Material>();
+    [Header("Materiales")]
+    public List<Material> listaPersonajes =
+        new List<Material>();
+
+    [Header("Renderer")]
     public Renderer personajeRenderer;
 
-    private string key = "MaterialSeleccionado";
+    private string key =
+        "MaterialSeleccionado";
 
-    void Start()
+    private void Awake()
     {
-        if (listaPersonajes.Count == 0 || personajeRenderer == null)
+        if (personajeRenderer == null)
         {
-            Debug.LogWarning("Faltan materiales o Renderer");
+            personajeRenderer =
+                GetComponentInChildren<Renderer>();
+        }
+
+        if (personajeRenderer == null)
+        {
+            Debug.LogError(
+                "NO HAY RENDERER");
+
+            enabled = false;
+        }
+    }
+
+    private void Start()
+    {
+        if (listaPersonajes.Count == 0)
+        {
+            Debug.LogWarning(
+                "NO HAY MATERIALES");
+
             return;
         }
 
-        int indexActual = PlayerPrefs.GetInt(key, 0);
+        int indexActual =
+            PlayerPrefs.GetInt(key, 0);
 
-        
-        indexActual = Mathf.Clamp(indexActual, 0, listaPersonajes.Count - 1);
+        indexActual =
+            Mathf.Clamp(
+                indexActual,
+                0,
+                listaPersonajes.Count - 1);
 
-        personajeRenderer.material = listaPersonajes[indexActual];
+        personajeRenderer.material =
+            listaPersonajes[indexActual];
+
+        Debug.Log(
+            "SKIN CARGADA: " +
+            indexActual);
     }
 }

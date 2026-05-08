@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public IntVariable playerHP;
     public FloatVariable gameTimer;
     public IntVariable bossHP;
-    public IntVariable bossHP;
+    
     public FloatVariable freezeLevel;
 
     [Header("Eventos SO — asignar en Inspector")]
@@ -87,9 +87,9 @@ public class GameManager : MonoBehaviour
 
 
         Estado = GameState.Won;
-        Time.timeScale = 0f;
+        
 
-        if (winLoseScreen != null) winLoseScreen.ShowWin();
+        SceneManager.LoadScene("Win");
     }
 
     public void LoseGame()
@@ -98,9 +98,7 @@ public class GameManager : MonoBehaviour
 
 
         Estado = GameState.Lost;
-        Time.timeScale = 0f;
-
-        if (winLoseScreen != null) winLoseScreen.ShowLose();
+        SceneManager.LoadScene("Perder");
     }
 
     public void TogglePause()

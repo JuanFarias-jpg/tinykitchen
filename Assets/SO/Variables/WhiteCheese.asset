@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: WhiteCheese
   m_EditorClassIdentifier: 
   initialValue: 0
-  runtimeValue: 4
+  runtimeValue: 30

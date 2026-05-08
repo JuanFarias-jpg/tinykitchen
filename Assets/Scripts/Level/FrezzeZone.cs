@@ -27,58 +27,93 @@ public class FreezeZone : MonoBehaviour
     public GameEvent OnPlayerDamage;
 
     private bool playerInside = false;
-
-    private void Update()
+    private bool warningSent = false;
+    public GameHUDManager GameHud;
+private void Update()
     {
         if (playerInside)
         {
-            
+        
             freezeLevel.Value += freezeSpeed * Time.deltaTime;
-            freezeLevel.Value = Mathf.Clamp(freezeLevel.Value, 0f, maxFreeze);
 
-            
+            freezeLevel.Value =
+                Mathf.Clamp(
+                    freezeLevel.Value,
+                    0f,
+                    maxFreeze);
+
+ 
+
             if (freezeLevel.Value >= maxFreeze * 0.5f)
             {
-                OnFreezeWarning?.Raise();
+                if (!warningSent)
+                {
+                    warningSent = true;
+
+                    if (OnFreezeWarning != null)
+                        OnFreezeWarning.Raise();
+                }
             }
 
-            
+
             freezeTimer += Time.deltaTime;
+
             if (freezeTimer >= timeToDamage)
             {
-                OnPlayerDamage?.Raise();
                 freezeTimer = 0f;
+
+                Debug.Log("DAÑO POR FRÍO");
+
+                if (OnPlayerDamage != null)
+                    OnPlayerDamage.Raise();
             }
 
-            
+         
             slowTimer += Time.deltaTime;
+
             if (slowTimer >= timeToSlow)
             {
+                slowTimer = 0f;
+
                 playerSpeed.Value -= slowAmount;
 
-                
-                playerSpeed.Value = Mathf.Clamp(playerSpeed.Value, minSpeed, maxSpeed);
-
-                Debug.Log("PLAYER MAS LENTO: " + playerSpeed.Value);
-
-                slowTimer = 0f;
+                playerSpeed.Value =
+                    Mathf.Clamp(
+                        playerSpeed.Value,
+                        minSpeed,
+                        maxSpeed);
             }
         }
         else
         {
-            
-            if (freezeLevel.Value > 0)
+      
+
+            freezeLevel.Value -=
+                unfreezeSpeed * Time.deltaTime;
+
+            freezeLevel.Value =
+                Mathf.Clamp(
+                    freezeLevel.Value,
+                    0f,
+                    maxFreeze);
+
+     
+
+            if (freezeLevel.Value < maxFreeze * 0.5f)
             {
-                freezeLevel.Value -= unfreezeSpeed * Time.deltaTime;
-                freezeLevel.Value = Mathf.Clamp(freezeLevel.Value, 0f, maxFreeze);
+                warningSent = false;
             }
 
-            
-            playerSpeed.Value += (slowAmount * 2f) * Time.deltaTime;
+            playerSpeed.Value +=
+                (slowAmount * 2f) * Time.deltaTime;
 
-            
-            playerSpeed.Value = Mathf.Clamp(playerSpeed.Value, minSpeed, maxSpeed);
+            playerSpeed.Value =
+                Mathf.Clamp(
+                    playerSpeed.Value,
+                    minSpeed,
+                    maxSpeed);
 
+            // IMPORTANTE
             freezeTimer = 0f;
             slowTimer = 0f;
         }
@@ -89,6 +124,8 @@ public class FreezeZone : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = true;
+
+            
         }
     }
 
@@ -97,6 +134,11 @@ public class FreezeZone : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = false;
+
+           
+           
+                GameHud.RemoveFreezeWarning();
+            
         }
     }
 }
