@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -7,25 +8,21 @@ public class GameManager : MonoBehaviour
     public enum GameState { Playing, Paused, Won, Lost }
     public GameState Estado { get; private set; } = GameState.Playing;
 
-    [Header("Variables SO — asignar en Inspector")]
-    [Tooltip("HP del jugador. Se resetea a initialValue al empezar.")]
-    public IntVariable   playerHP;
-    [Tooltip("Timer del juego. initialValue debe ser 1200 (20 min).")]
+    [Header("Variables SO")]
+    public IntVariable playerHP;
     public FloatVariable gameTimer;
-    [Tooltip("HP del boss. Se resetea a initialValue al empezar.")]
-    public IntVariable   bossHP;
-    [Tooltip("Nivel de congelamiento del jugador. Se resetea a 0.")]
+    public IntVariable bossHP;
     public FloatVariable freezeLevel;
 
-    [Header("Eventos SO — asignar en Inspector")]
-    [Tooltip("Escucha este evento para transición a victoria.")]
+    [Header("Eventos SO")]
     public GameEvent OnBossDefeated;
-    [Tooltip("Escucha este evento para transición a derrota.")]
     public GameEvent OnTimeExpired;
 
     [Header("UI")]
-    [Tooltip("Pantalla de victoria/derrota. Asignar en el Inspector.")]
     public WinLoseScreen winLoseScreen;
+
+    // bandera para evitar reset al volver de Personalizacion
+    public static bool volverDePersonalizacion = false;
 
     private void Awake()
     {
@@ -34,42 +31,49 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
 
-        ResetAllVariables();
+        // SOLO resetear si NO viene de Personalizacion
+        if (!volverDePersonalizacion)
+        {
+            ResetAllVariables();
+            PlayerHealth.IsDead = false;
+        }
 
-        // Evita que IsDead quede true entre sesiones de Play en el editor
-        PlayerHealth.IsDead = false;
+        volverDePersonalizacion = false;
     }
 
     private void ResetAllVariables()
     {
-        // Cada SO tiene ResetToInitial() que copia initialValue → runtimeValue.
-        if (playerHP    != null) playerHP.ResetToInitial();
-        if (gameTimer   != null) gameTimer.ResetToInitial();
-        if (bossHP      != null) bossHP.ResetToInitial();
+        if (playerHP != null) playerHP.ResetToInitial();
+        if (gameTimer != null) gameTimer.ResetToInitial();
+        if (bossHP != null) bossHP.ResetToInitial();
         if (freezeLevel != null) freezeLevel.ResetToInitial();
     }
 
-    // Llamado por el GameEventListener de OnBossDefeated.
     public void WinGame()
     {
         if (Estado != GameState.Playing) return;
+
         Estado = GameState.Won;
         Time.timeScale = 0f;
-        if (winLoseScreen != null) winLoseScreen.ShowWin();
+
+        if (winLoseScreen != null)
+            winLoseScreen.ShowWin();
     }
 
-    // Llamado por el GameEventListener de OnTimeExpired, o por PlayerHealth.Die().
     public void LoseGame()
     {
         if (Estado != GameState.Playing) return;
+
         Estado = GameState.Lost;
         Time.timeScale = 0f;
-        if (winLoseScreen != null) winLoseScreen.ShowLose();
+
+        if (winLoseScreen != null)
+            winLoseScreen.ShowLose();
     }
 
-    // Llamado por pausayeso.cs cuando el jugador presiona Escape.
     public void TogglePause()
     {
         if (Estado == GameState.Playing)
@@ -88,7 +92,8 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         PlayerAnimator.ResetLevantarse();
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+
+        SceneManager.LoadScene(
+            SceneManager.GetActiveScene().name);
     }
 }

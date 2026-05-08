@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39155ed64284a5e4aa6722d1bc37fa1d, type: 3}
-  m_Name: JumpForce
+  m_Script: {fileID: 11500000, guid: e46ccbb3659ce6d4b938ad36e884703d, type: 3}
+  m_Name: WhiteCheese
   m_EditorClassIdentifier: 
-  initialValue: 12
-  runtimeValue: 12
+  initialValue: 0
+  runtimeValue: 4
