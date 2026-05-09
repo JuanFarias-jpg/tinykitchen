@@ -70,8 +70,27 @@ public class PlayerMovement : MonoBehaviour
     public bool IsGrounded => _controller.isGrounded;
     public float VerticalVelocity => _verticalVelocity;
 
+    //Resolviendo bug
+    private Vector3 _lastSafePosition;
+    private Vector3 _lastFramePosition;
+
+    [SerializeField] private float teleportDetectionDistance = 6f;
+    [SerializeField] private float safePositionUpdateTime = 0.2f;
+
+    private float _safeTimer;
+
+    private void Start()
+    {
+        _lastSafePosition = transform.position;
+        _lastFramePosition = transform.position;
+    }
+    //Resolviendo bug
+
     private void Awake()
     {
+
+
+
         _controller = GetComponent<CharacterController>();
         _input = GetComponent<PlayerInputHandler>();
 
@@ -89,7 +108,10 @@ public class PlayerMovement : MonoBehaviour
         // independientemente de puedeMoverse.
         HandleDiveFriction();
         HandleRollMomentum();
-
+        //BUG
+        UpdateSafePosition();
+        DetectAbruptMovement();
+        //BUG
         if (!puedeMoverse)
         {
             // Gravedad sigue aplicando durante animaciones bloqueantes.
@@ -218,7 +240,42 @@ public class PlayerMovement : MonoBehaviour
         }
         _input.ConsumeJump();
     }
+    private void UpdateSafePosition()
+    {
+        _safeTimer += Time.deltaTime;
 
+        // Solo guardar posiciones válidas
+        if (_controller.isGrounded && _safeTimer >= safePositionUpdateTime)
+        {
+            _lastSafePosition = transform.position;
+            _safeTimer = 0f;
+        }
+    }
+
+    private void DetectAbruptMovement()
+    {
+        float distance = Vector3.Distance(transform.position, _lastFramePosition);
+
+        if (distance > teleportDetectionDistance)
+        {
+            // Teleport instantáneo invisible
+            _controller.enabled = false;
+
+            transform.SetPositionAndRotation(
+                _lastSafePosition,
+                transform.rotation
+            );
+
+            _controller.enabled = true;
+
+            // Reset total de fuerzas
+            _verticalVelocity = -2f;
+            _diveVelocity = Vector3.zero;
+            _rollVelocity = Vector3.zero;
+        }
+
+        _lastFramePosition = transform.position;
+    }
     private void HandleDive()
     {
         // Condiciones: en el aire, dive no usado, _diveVelocity inactiva

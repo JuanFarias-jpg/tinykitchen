@@ -6360,7 +6360,7 @@ Camera:
   m_GameObject: {fileID: 72111469}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 4
   m_BackGroundColor: {r: 0.09433961, g: 0.09433961, b: 0.09433961, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -6383,8 +6383,8 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 60
+  far clip plane: 10000
+  field of view: 40
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -6410,8 +6410,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 72111469}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.15632458, y: 0.0000000059450853, z: -9.409311e-10, w: 0.98770577}
-  m_LocalPosition: {x: -150.27, y: 2.2399771, z: 131.26588}
+  m_LocalRotation: {x: 0.09616971, y: -1.2510996e-22, z: 1.2087817e-23, w: 0.99536496}
+  m_LocalPosition: {x: -150.27, y: 2.2399771, z: 127.27299}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -26658,13 +26658,13 @@ MonoBehaviour:
   Radius: 5
   Orbits:
     Top:
-      Radius: 3.34
+      Radius: 5
       Height: 4.53
     Center:
-      Radius: 6
+      Radius: 10
       Height: 2
     Bottom:
-      Radius: 3.8
+      Radius: 5
       Height: 0.3
     SplineCurvature: 0.5
   RecenteringTarget: 2
@@ -26722,10 +26722,10 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 60
+    FieldOfView: 40
     OrthographicSize: 5
     NearClipPlane: 0.3
-    FarClipPlane: 1000
+    FarClipPlane: 10000
     Dutch: 0
     ModeOverride: 0
     PhysicalProperties:
@@ -26749,8 +26749,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 258995858}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.15632458, y: 0.000000005945086, z: -9.409312e-10, w: 0.98770577}
-  m_LocalPosition: {x: -150.27, y: 2.2399771, z: 131.26588}
+  m_LocalRotation: {x: 0.0961697, y: -1.2469581e-22, z: 7.8014155e-24, w: 0.995365}
+  m_LocalPosition: {x: -150.27, y: 2.2399771, z: 127.27299}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -26763,7 +26763,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 258995858}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dbe43d662878a7c43bcd44d43c9e2094, type: 3}
   m_Name: 
@@ -26777,7 +26777,7 @@ MonoBehaviour:
     m_Bits: 0
   MinimumDistanceFromTarget: 1
   AvoidObstacles:
-    Enabled: 0
+    Enabled: 1
     DistanceLimit: 0
     MinimumOcclusionTime: 0.1
     CameraRadius: 0.4
@@ -26785,7 +26785,7 @@ MonoBehaviour:
       Enabled: 0
       YOffset: 0
     Strategy: 0
-    MaximumEffort: 4
+    MaximumEffort: 1
     SmoothingTime: 0
     Damping: 0.2
     DampingWhenOccluded: 0.3
@@ -109567,6 +109567,8 @@ MonoBehaviour:
   rollMinSpeed: 1
   rollFriction: 12
   diveActiveThreshold: 1
+  teleportDetectionDistance: 1.5
+  safePositionUpdateTime: 0.01
 --- !u!143 &776534298
 CharacterController:
   m_ObjectHideFlags: 0
@@ -109586,10 +109588,10 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 3
   m_Height: 2
-  m_Radius: 0.5
+  m_Radius: 0.36
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
+  m_StepOffset: 0.05
+  m_SkinWidth: 0.03
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &776534299
@@ -254301,7 +254303,7 @@ Transform:
   m_GameObject: {fileID: 1632698387}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -2514, y: 31, z: 113}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
