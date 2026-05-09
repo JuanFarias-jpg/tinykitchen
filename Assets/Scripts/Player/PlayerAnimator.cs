@@ -35,17 +35,17 @@ public class PlayerAnimator : MonoBehaviour
     private static bool _levantarseYaReproducido = false;
 
     // Hashes cacheados para evitar strings en Update
-    private static readonly int SpeedParam            = Animator.StringToHash("Speed");
-    private static readonly int IsGroundedParam       = Animator.StringToHash("IsGrounded");
+    private static readonly int SpeedParam = Animator.StringToHash("Speed");
+    private static readonly int IsGroundedParam = Animator.StringToHash("IsGrounded");
     private static readonly int VerticalVelocityParam = Animator.StringToHash("VerticalVelocity");
-    private static readonly int LevantarseParam       = Animator.StringToHash("Levantarse");
-    private static readonly int DiveParam             = Animator.StringToHash("Dive");
-    private static readonly int RollParam             = Animator.StringToHash("Roll");
+    private static readonly int LevantarseParam = Animator.StringToHash("Levantarse");
+    private static readonly int DiveParam = Animator.StringToHash("Dive");
+    private static readonly int RollParam = Animator.StringToHash("Roll");
 
     private void Awake()
     {
         _movement = GetComponent<PlayerMovement>();
-        _input    = GetComponent<PlayerInputHandler>();
+        _input = GetComponent<PlayerInputHandler>();
 
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
@@ -63,10 +63,10 @@ public class PlayerAnimator : MonoBehaviour
         // Se marca ANTES de esperar: si algo interrumpe la coroutine,
         // no se vuelve a disparar en el próximo Start().
         _levantarseYaReproducido = true;
-        _movement.puedeMoverse   = false;
+        _movement.puedeMoverse = false;
         animator.SetTrigger(LevantarseParam);
         yield return new WaitForSeconds(duracionLevantarse);
-        _movement.puedeMoverse   = true;
+        _movement.puedeMoverse = true;
 
         // Forzar salida del estado levantarseChef en el Animator.
         // Si la transición hacia Idle no está configurada con Has Exit Time,
@@ -86,7 +86,7 @@ public class PlayerAnimator : MonoBehaviour
         bool physicsGrounded = _movement.IsGrounded;
 
         if (physicsGrounded) _airTimer = 0f;
-        else                 _airTimer += Time.deltaTime;
+        else _airTimer += Time.deltaTime;
 
         bool animatorGrounded = _airTimer < groundedBufferTime;
 

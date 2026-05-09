@@ -152,9 +152,9 @@ public class PlayerMovement : MonoBehaviour
         Vector2 input = _input.MoveInput;
 
         Vector3 forward = cameraTransform.forward;
-        Vector3 right   = cameraTransform.right;
+        Vector3 right = cameraTransform.right;
         forward.y = 0f; forward.Normalize();
-        right.y   = 0f; right.Normalize();
+        right.y = 0f; right.Normalize();
 
         Vector3 moveDirection = forward * input.y + right * input.x;
 
@@ -231,7 +231,7 @@ public class PlayerMovement : MonoBehaviour
             if (moveInput.sqrMagnitude > 0.01f)
             {
                 Vector3 fwd = cameraTransform.forward; fwd.y = 0f; fwd.Normalize();
-                Vector3 rgt = cameraTransform.right;   rgt.y = 0f; rgt.Normalize();
+                Vector3 rgt = cameraTransform.right; rgt.y = 0f; rgt.Normalize();
                 _diveDirection = (fwd * moveInput.y + rgt * moveInput.x).normalized;
             }
             else

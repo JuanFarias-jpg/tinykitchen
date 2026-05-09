@@ -6,6 +6,7 @@ public class QuesoMoneda : MonoBehaviour
     [Header("Moneda")]
     public IntVariable WhiteCheese;
     public int amount = 1;
+    public AudioSource moneda;
 
     [Header("UI")]
     public TextMeshProUGUI cheeseText;
@@ -22,6 +23,7 @@ public class QuesoMoneda : MonoBehaviour
         if (WhiteCheese != null)
         {
             WhiteCheese.Value += amount;
+            moneda.Play();
             ActualizarUI();
         }
 
