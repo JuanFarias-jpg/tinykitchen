@@ -79,20 +79,15 @@ public class PlayerMovement : MonoBehaviour
 
     private float _safeTimer;
 
-    private void Start()
-    {
-        _lastSafePosition = transform.position;
-        _lastFramePosition = transform.position;
-    }
-    //Resolviendo bug
-
     private void Awake()
     {
-
-
-
         _controller = GetComponent<CharacterController>();
         _input = GetComponent<PlayerInputHandler>();
+
+        // Inicializar posiciones de seguridad en Awake (no Start) para evitar
+        // que otro script mueva al jugador antes de que Start corra.
+        _lastSafePosition = transform.position;
+        _lastFramePosition = transform.position;
 
         if (cameraTransform == null)
         {
@@ -102,16 +97,25 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        // _lastSafePosition y _lastFramePosition ya fueron inicializados en Awake.
+        // Start queda vacío intencionalmente; si necesitas lógica post-inicialización
+        // que dependa de otros scripts, ponla aquí.
+    }
+
     private void Update()
     {
         // El freno del dive y el momentum del roll corren siempre,
         // independientemente de puedeMoverse.
         HandleDiveFriction();
         HandleRollMomentum();
-        //BUG
-        UpdateSafePosition();
+
+        // ORDEN IMPORTA: DetectAbruptMovement primero, UpdateSafePosition después.
+        // Si se invierte el orden, una posición explosiva podría guardarse como "segura"
+        // en el mismo frame en que ocurre el bug.
         DetectAbruptMovement();
-        //BUG
+        UpdateSafePosition();
         if (!puedeMoverse)
         {
             // Gravedad sigue aplicando durante animaciones bloqueantes.
@@ -240,11 +244,13 @@ public class PlayerMovement : MonoBehaviour
         }
         _input.ConsumeJump();
     }
+    // Guarda la posición actual como segura si el jugador está en suelo firme.
+    // Se llama cada frame desde Update, DESPUÉS de DetectAbruptMovement,
+    // para evitar guardar como "segura" una posición que acaba de ser corregida.
     private void UpdateSafePosition()
     {
         _safeTimer += Time.deltaTime;
 
-        // Solo guardar posiciones válidas
         if (_controller.isGrounded && _safeTimer >= safePositionUpdateTime)
         {
             _lastSafePosition = transform.position;
@@ -258,7 +264,10 @@ public class PlayerMovement : MonoBehaviour
 
         if (distance > teleportDetectionDistance)
         {
-            // Teleport instantáneo invisible
+            //log temporal para checar bug
+            Debug.LogWarning($"[BUG Collider] Movimiento abrupto: {distance:F2} unidades. " +
+                             $"Desde {_lastFramePosition} → {transform.position}. " +
+                             $"Regresando a posición segura: {_lastSafePosition}");
             _controller.enabled = false;
 
             transform.SetPositionAndRotation(
@@ -268,12 +277,13 @@ public class PlayerMovement : MonoBehaviour
 
             _controller.enabled = true;
 
-            // Reset total de fuerzas
+            // Resetear todas las fuerzas para que el jugador no salga disparado de nuevo.
             _verticalVelocity = -2f;
             _diveVelocity = Vector3.zero;
             _rollVelocity = Vector3.zero;
         }
 
+    
         _lastFramePosition = transform.position;
     }
     private void HandleDive()
