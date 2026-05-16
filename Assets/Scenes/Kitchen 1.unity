@@ -20,12 +20,12 @@ RenderSettings:
   m_FogDensity: 0.098
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 0.7075472, g: 0.7075472, b: 0.7075472, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1.17
   m_AmbientMode: 0
-  m_SubtractiveShadowColor: {r: 0.0269669, g: 0.027344728, b: 0.028301895, a: 1}
+  m_SubtractiveShadowColor: {r: 1, g: 1, b: 1, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
@@ -6364,8 +6364,8 @@ Camera:
   m_GameObject: {fileID: 72111469}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 4
-  m_BackGroundColor: {r: 0.09433961, g: 0.09433961, b: 0.09433961, a: 1}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.06132078, g: 0.06132078, b: 0.06132078, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -6414,8 +6414,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 72111469}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.09616971, y: -1.2510996e-22, z: 1.2087817e-23, w: 0.99536496}
-  m_LocalPosition: {x: -135.94, y: 3.679977, z: 107.59298}
+  m_LocalRotation: {x: 0.09580203, y: 0.000000030578235, z: -0.0000000029429943, w: 0.9954004}
+  m_LocalPosition: {x: -135.94, y: 3.672598, z: 123.401505}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -26662,14 +26662,14 @@ MonoBehaviour:
   Radius: 5
   Orbits:
     Top:
-      Radius: 5
+      Radius: 7
       Height: 4.53
     Center:
       Radius: 10
       Height: 2
     Bottom:
-      Radius: 5
-      Height: 0.3
+      Radius: 7
+      Height: -0.3
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
@@ -26753,8 +26753,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 258995858}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0961697, y: -1.2469581e-22, z: 7.8014155e-24, w: 0.995365}
-  m_LocalPosition: {x: -135.94, y: 3.679977, z: 107.59298}
+  m_LocalRotation: {x: 0.09580203, y: 0.000000030578235, z: -0.0000000029429932, w: 0.9954004}
+  m_LocalPosition: {x: -135.94, y: 3.672598, z: 123.401505}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -109549,7 +109549,7 @@ Transform:
   m_GameObject: {fileID: 776534288}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -135.94, y: 1.73, z: 117.59}
+  m_LocalPosition: {x: -135.94, y: 1.73, z: 133.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -109573,14 +109573,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerSpeed: {fileID: 11400000, guid: baf8f1f9b9b1b6745a7c65cbc15a9353, type: 2}
   jumpForce: {fileID: 11400000, guid: 23d9f7349ca99594f8920290fc73ded1, type: 2}
-  gravity: -15
+  gravity: -30
   airControlFactor: 0.8
   particulas: {fileID: 932184788}
   coyoteTime: 0.15
   rotationSpeed: 10
   cameraTransform: {fileID: 258995864}
   puedeMoverse: 1
-  diveSpeed: 5
+  diveSpeed: 10
   diveFriction: 0
   rollMinSpeed: 1
   rollFriction: 12
@@ -109606,10 +109606,10 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 3
   m_Height: 0.01
-  m_Radius: 0.2
+  m_Radius: 0.1
   m_SlopeLimit: 45
-  m_StepOffset: 0.05
-  m_SkinWidth: 1
+  m_StepOffset: 0.1
+  m_SkinWidth: 1.05
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &776534299
@@ -116717,7 +116717,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1192439807285520765, guid: e98bd25d02591e24ea3f5e3a96cf8b8f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -168.19
+      value: -150.3
       objectReference: {fileID: 0}
     - target: {fileID: 1192439807285520765, guid: e98bd25d02591e24ea3f5e3a96cf8b8f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -116725,7 +116725,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1192439807285520765, guid: e98bd25d02591e24ea3f5e3a96cf8b8f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 107.2
+      value: 191.3
       objectReference: {fileID: 0}
     - target: {fileID: 1192439807285520765, guid: e98bd25d02591e24ea3f5e3a96cf8b8f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -117352,7 +117352,7 @@ MonoBehaviour:
   timeToSlow: 10
   OnFreezeWarning: {fileID: 11400000, guid: 1a6a44914545a264496a0f56dbe93fe6, type: 2}
   OnPlayerDamage: {fileID: 11400000, guid: 44972bdc8a9ac454892069757ac99afd, type: 2}
-  GameHud: {fileID: 0}
+  GameHud: {fileID: 2068542612}
 --- !u!65 &894190687
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -199255,7 +199255,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.8
+  m_Intensity: 0.7
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -285096,7 +285096,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5012184318979853922, guid: 707d3e09d440f6544b6f53ca7fb1bce2, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5012184318979853922, guid: 707d3e09d440f6544b6f53ca7fb1bce2, type: 3}
       propertyPath: m_Center.x
@@ -308053,7 +308053,8 @@ GameObject:
   - component: {fileID: 1875643649}
   - component: {fileID: 1875643648}
   - component: {fileID: 1875643651}
-  m_Layer: 0
+  - component: {fileID: 1875643652}
+  m_Layer: 6
   m_Name: kitchencounter_straight_A_backsplash (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -308170,6 +308171,38 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.020000005, y: 0.0019964888, z: 0.001977989}
   m_Center: {x: -1.3641607e-16, y: 0.011001846, z: -0.009010902}
+--- !u!114 &1875643652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1875643646}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 1
+  m_TileSize: 16
+  m_OverrideVoxelSize: 1
+  m_VoxelSize: 0.4
+  m_MinRegionArea: 100
+  m_NavMeshData: {fileID: 23800000, guid: 545d9cd0e65c3c645983c26d9b4669e6, type: 2}
+  m_BuildHeightMesh: 0
 --- !u!1 &1876344542
 GameObject:
   m_ObjectHideFlags: 0
